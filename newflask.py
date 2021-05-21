@@ -7,21 +7,33 @@ app = Flask(__name__)
 def index():
     mysql = connectToMySQL('users_schema')   # call the function, passing in the name of our db
     users = mysql.query_db('SELECT * FROM users;')  # call the query_db function, pass in the query as a string
-    print(users)
-    return render_template("readall.html", all_users=users)
+    # print(users)
+    return render_template("readall.html", all_users = users)
 
 @app.route("/users/new", methods=["POST"])
 def add_friend_to_db():
     mysql = connectToMySQL('users_schema')
     print(request.form)
-    # mysql.query_db("INSERT INTO users_schema(first_name, last_name, email,created_at, updated_at) VALUES (fname from form, lname from form, email from form, NOW(), NOW())")
-    # QUERY: INSERT INTO first_flask (first_name, last_name, occupation, created_at, updated_at) 
-    #                         VALUES (fname from form, lname from form, occupation from form, NOW(), NOW());
-    query = "INSERT INTO users (first_name, last_name, email) VALUES (%(fname)s, %(lname)s, %(email)s);"
+    query ="INSERT INTO users (first_name, last_name, email, uploaded_at)VALUES (%(fname)s, %(lname)s, %(email)s, %(NOW())s);"
     data = {
         "fname":request.form['fname'],
         "lname":request.form['lname'],
         "email":request.form['email']
+    }
+    mysql.query_db(query, data)
+    return redirect('/users')
+
+
+@app.route("/update/<id>", methods=["POST"])
+def update(id):
+    mysql = connectToMySQL('users_schema')
+    print(request.form)
+    query ="UPDATE users SET first_name = %(first_name)s, last_name = %(last_name)s, email = %(email)s WHERE id = %(id)s;"
+    data = {
+        "first_name":request.form['fname'],
+        "last_name":request.form['lname'],
+        "email":request.form['email'],
+        "id": int(id)
     }
     mysql.query_db(query, data)
     return redirect('/users')
@@ -32,7 +44,38 @@ def add_friend_to_db():
 def addfriendhtml():
     return render_template('create.html')
 
+@app.route("/show/<id>")
+def show(id):
+    mysql= connectToMySQL('users_schema')
+    query="SELECT * FROM users WHERE id=%(id)s;"
+    data= {
+        "id": int(id)
+    }
+    user=mysql.query_db(query, data)
+    print(user)
+    return render_template("readone.html", user=user[0])
 
+
+@app.route("/edit/<id>")
+def edit(id):
+    mysql= connectToMySQL('users_schema')
+    query="SELECT * FROM users WHERE id=%(id)s;"
+    data={
+        "id": int(id)
+    }
+    user=mysql.query_db(query, data)
+    return render_template('edit.html', user = user[0])
+
+
+@app.route("/delete/<id>")
+def delete(id):
+    mysql= connectToMySQL('users_schema')
+    query="DELETE FROM users WHERE id=%(id)s;"
+    data={
+        "id": int(id)
+    }
+    mysql.query_db(query, data)
+    return redirect("/users")
 
 if __name__ == "__main__":
     app.run(debug=True)

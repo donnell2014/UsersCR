@@ -8,13 +8,17 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 </head>
 <body>
-    <h1>Add a Friend</h1>
-    <form action="/users/new" method="POST">
-        <p>First Name: <input type="text" name="fname"></p>
-        <p>Last Name: <input type="text" name="lname"></p>
-        <p>Email: <input type="text" name="email"></p>
-        <input type="submit" value="Add Friend">
-    </form>
-    <a class= "btn btn-primary" href=/users>Home</a>
+    <h1>User</h1>
+    <p >ID: {{user["id"]}}</p>
+    <p>First Name: {{user["first_name"]}}</p>
+    <p>Last Name: {{user["last_name"]}}</p>
+    <p>Email: {{user["email"]}}</p>
+    <p>
+        <a class= "btn btn-primary" href="/edit/{{user['id']}}">Edit</a> 
+        <a class= "btn btn-danger"href="/delete/{{user['id']}}">Delete</a> 
+        <a class= "btn btn-primary" href=/users>Home</a>
+    </p>
+    
+    
 </body>
 </html>
